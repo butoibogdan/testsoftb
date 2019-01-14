@@ -78,12 +78,24 @@ class ApiService
 
     public function getAllUserTransaction()
     {
+        $request = $this->getRequest()->request;
         $userToken = $this->getRequest()->headers->get('X-AUTH-TOKEN');
-        $filters = $this->getRequest()->request->all();
+        $filters = $request->all();
+
+        $limit = [];
+
+        if ($request->get('offset') !== null &&
+            $request->get('limit') !== null) {
+            $limit = [$request->get('offset'), $request->get('limit')];
+        }
 
         $user = $this->getDoctrine()
             ->getRepository(User::class)
-            ->userTransacation($userToken, $filters);
+            ->userTransaction(
+                $userToken,
+                $filters,
+                $limit
+            );
 
         return $user;
     }

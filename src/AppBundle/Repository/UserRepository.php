@@ -14,9 +14,10 @@ class UserRepository extends EntityRepository
     /**
      * @param $userToken
      * @param array $filters
+     * @param array $limit
      * @return mixed
      */
-    public function userTransacation($userToken, array $filters = [])
+    public function userTransaction($userToken, array $filters = [], array $limit = [])
     {
         $qb = $this->createQueryBuilder('user')
             ->select('user.id', 'user.cnp', 'user.name', 'trans.id', 'trans.amount')
@@ -34,6 +35,11 @@ class UserRepository extends EntityRepository
         }
 
         $qb->setParameter('userToken', $userToken);
+
+        if (empty($limit)) {
+            $qb->setFirstResult($limit[0])
+                ->setMaxResults($limit[1]);
+        }
 
         return $qb->getQuery()
             ->useResultCache(true, 3600)
